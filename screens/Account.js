@@ -1,12 +1,12 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 
-export default function UserLogged() {
+export default function Account() {
   return (
     <View>
-      <Text>UserLogged...</Text>
+      <Text>Account</Text>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({})
