@@ -27,12 +27,12 @@ export default function UserLogged() {
       }
       <Text>Account Options...</Text>
       <Button
-        title="Cerrar Sesion"
+        title="Cerrar Sesión"
         buttonStyle={styles.btnCloseSession}
         titleStyle={styles.btnCloseSessionTitle}
         onPress={() => {
           closeSession();
-          navigation.navigate("restaurants");
+          navigation.navigate("restaurants")
         }}
       />
       <Toast ref={toastRef} position="center" opacity={0.9} />
