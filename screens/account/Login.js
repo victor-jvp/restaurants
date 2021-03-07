@@ -1,25 +1,26 @@
 import React from 'react'
-import { ScrollView, Image, StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet, Text, View } from 'react-native'
 import { Divider } from 'react-native-elements'
 import { useNavigation, userNavigation } from '@react-navigation/native'
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import LoginForm from '../../components/account/LoginForm'
 
 export default function Login() {
   return (
-    <ScrollView>
+    <KeyboardAwareScrollView>
       <Image
         source={require("../../assets/restaurant-logo.png")}
         resizeMode="contain"
         style={styles.image}
       />
       <View style={styles.container}>
-        <LoginForm/>
-        <CreateAccount/>
+        <LoginForm />
+        <CreateAccount />
       </View>
-      <Divider style={styles.divider}/>
-    </ScrollView>
-  )
+      <Divider style={styles.divider} />
+    </KeyboardAwareScrollView>
+  );
 }
 
 function CreateAccount(props) {
