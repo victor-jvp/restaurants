@@ -7,6 +7,7 @@ import Toast from 'react-native-easy-toast'
 
 import Loading from '../../components/Loading'
 import InfoUser from '../../components/account/InfoUser'
+import AccountOptions from './AccountOptions'
 
 export default function UserLogged() {
   const toastRef = useRef()
@@ -22,30 +23,33 @@ export default function UserLogged() {
 
   return (
     <View style={styles.container}>
-      {
-        user && (
-          <View>
-            <InfoUser
-              user={user}
-              setLoading={setLoading}
-              setLoadingText={setLoadingText}
-            />
-            <Text>Account Options...</Text>
-          </View>
-        )
-      }
-      
+      {user && (
+        <View>
+          <InfoUser
+            user={user}
+            setLoading={setLoading}
+            setLoadingText={setLoadingText}
+          />
+          <AccountOptions
+            user={user}
+            toastRef={toastRef}
+            setLoading={setLoading}
+            setLoadingText={setLoadingText}
+          />
+        </View>
+      )}
+
       <Button
         title="Cerrar Sesión"
         buttonStyle={styles.btnCloseSession}
         titleStyle={styles.btnCloseSessionTitle}
         onPress={() => {
           closeSession();
-          navigation.navigate("restaurants")
+          navigation.navigate("restaurants");
         }}
       />
       <Toast ref={toastRef} position="center" opacity={0.9} />
-      <Loading isVisible={loading} text={ loadingText }/>
+      <Loading isVisible={loading} text={loadingText} />
     </View>
   );
 }
