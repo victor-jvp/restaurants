@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { Button, Icon, Input } from "react-native-elements";
 import { isEmpty } from "lodash";
 
-import { updateProfile } from "../../utils/actions";
+import { reauthenticate, updateEmail } from "../../utils/actions";
 import { validateEmail } from "../../utils/helpers";
 
 export default function ChangeEmailForm({ email, setShowModal, toastRef, setReloadUser }) {
@@ -19,26 +19,31 @@ export default function ChangeEmailForm({ email, setShowModal, toastRef, setRelo
       return
     }
 
-    // setLoading(true)
-    // const result = await updateProfile({ displayName: newDisplayName })
-    // setLoading(false)
+    setLoading(true)
+    const resultReauthenticate = await reauthenticate(password);
+    if (!resultReauthenticate.statusResponse) {
+      setLoading(false);
+      setErrorPassword("Contraseña incorrecta.");
+      return;
+    }
 
-    // if (!result.statusResponse) {
-    //   setError("Error al actualizar nombres y apellidos, intenta mas tarde.");
-    //   return;
-    // }
+    const resultUpdateEmail = await updateEmail(newEmail);
+    setLoading(false);
 
-    // setReloadUser(true)
-    // toastRef.current.show("Se han actualizado nombres y apellidos", 3000)
-    // setShowModal(false)
+    if (!resultUpdateEmail.statusResponse) {
+      setErrorEmail("El correo ingresado ya esta en uso por otro usuario.")
+      return
+    }    
+
+    setReloadUser(true)
+    toastRef.current.show("Se han actualizado el email", 3000)
+    setShowModal(false)
   }
 
   const validateForm = () => {
     setErrorEmail(null)
     setErrorPassword(null)
     let isValid = true
-
-    console.log(email);
 
     if (!validateEmail(newEmail)) {
       setErrorEmail("Debes ingresar un email válido.");
