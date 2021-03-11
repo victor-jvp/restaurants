@@ -21,7 +21,9 @@ export default function AddRestaurant({ navigation }) {
         text="Creando restaurante..."
       />
       <Toast
-        ref={toastRef} position="center" opacity={0, 9}
+        ref={toastRef}
+        position="center"
+        opacity={0, 9}
       />
     </KeyboardAwareScrollView>
   );
