@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Dimensions, StyleSheet, Text, View } from 'react-native'
 import { Avatar, Button, Icon, Image, Input } from 'react-native-elements';
 import CountryPicker from 'react-native-country-picker-modal'
 import { ScrollView, Alert } from "react-native";
 import { map, size, filter } from 'lodash'
+import MapView from "react-native-maps";
 
-import { loadImageFromGallery } from '../../utils/helpers';
+import { getCurrentLocation, loadImageFromGallery } from '../../utils/helpers';
 import Modal from '../../components/Modal'
+
 
 const widthScreen = Dimensions.get("window").width
 
@@ -20,6 +22,7 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
   const [imagesSelected, setImagesSelected] = useState([])
   const [isVisibleMap, setIsVisibleMap] = useState(false)
   const [locationRestaurant, setLocationRestaurant] = useState(null)
+  
 
   const addRestaurant = () => {
     console.log(formData);
@@ -54,6 +57,7 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
       <MapRestaurant
         isVisibleMap={isVisibleMap}
         setIsVisibleMap={setIsVisibleMap}
+        locationRestaurant={locationRestaurant}
         setLocationRestaurant={setLocationRestaurant}
         toastRef={toastRef}
       />
@@ -61,15 +65,50 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
   );
 }
 
-function MapRestaurant({ isVisibleMap, setIsVisibleMap, setLocationRestaurant, toastRef }) {
+function MapRestaurant({ isVisibleMap, setIsVisibleMap, locationRestaurant ,setLocationRestaurant, toastRef }) {
+  useEffect(() => {
+    (async () => {
+      const response = await getCurrentLocation()
+      if (response.status) {
+        setLocationRestaurant(response.location)
+        console.log(locationRestaurant);
+      }
+    })()
+  }, [])
+
   return (
-    <Modal
-      isVisible={isVisibleMap}
-      setIsVisible={setIsVisibleMap}
-    >
-      <Text>Map Goes Here!!!</Text>
+    <Modal isVisible={isVisibleMap} setIsVisible={setIsVisibleMap}>
+      <View>
+        {locationRestaurant && (
+          <MapView
+            style={styles.mapStyle}
+            initialRegion={locationRestaurant}
+            showsUserLocation={true}
+          >
+            <MapView.Marker
+              coordnate={{
+                laditute: location.laditute,
+                longitude: location.longitude,
+              }}
+              draggable
+            />
+          </MapView>
+        )}
+        <View style={styles.viewMapBtn}>
+          <Button
+            title="Guardar Ubicación"
+            containerStyle={styles.viewMapBtncontainerSave}
+            buttonStyle={styles.viewMapBtnSave}
+          />
+          <Button
+            title="Cancelar Ubicación"
+            containerStyle={styles.viewMapBtncontainerCancel}
+            buttonStyle={styles.viewMapBtnCancel}
+          />
+        </View>
+      </View>
     </Modal>
-  )
+  );
 }
 
 function ImageRestaurant({ imageRestaurant }) {
@@ -274,5 +313,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 200,
     marginBottom: 20
+  },
+  mapStyle: {
+    width: "100%",
+    height: 550
+  },
+  viewMapBtn: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop:  10
+  },
+  viewMapBtncontainerCancel: {
+    paddingLeft: 5
+  },
+  viewMapBtncontainerSave: {
+    paddingRight: 5
+  },
+  viewMapBtnCancel: {
+    backgroundColor: "#a65273"
+  },
+  viewMapBtnSave: {
+    backgroundColor: "#442484"
   }
 });
