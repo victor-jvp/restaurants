@@ -3,10 +3,10 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native'
 import { Avatar, Button, Icon, Image, Input } from 'react-native-elements'
 import CountryPicker from 'react-native-country-picker-modal'
 import { ScrollView, Alert } from "react-native"
-import { map, size, filter } from 'lodash'
+import { map, size, filter, isEmpty } from 'lodash'
 import MapView from "react-native-maps"
 
-import { getCurrentLocation, loadImageFromGallery } from '../../utils/helpers';
+import { getCurrentLocation, loadImageFromGallery, validateEmail } from '../../utils/helpers';
 import Modal from '../../components/Modal'
 
 
@@ -25,8 +25,60 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
   
 
   const addRestaurant = () => {
-    console.log(formData);
-    console.log("Fuck yeah!!!");
+    if (!validForm()) {
+      return
+    }
+
+    console.log('Fuck Yeah!')
+  }
+
+  const validForm = () => {
+    clearErrors()
+    let isValid = true
+
+    if (isEmpty(formData.name)) {
+      setErrorName("Debes ingresar el nombre del restaurante.")
+      isValid = false
+    }
+
+    if (isEmpty(formData.address)) {
+      setErrorAddress("Debes ingresar la dirección del restaurante.")
+      isValid = false
+    }
+
+    if (!validateEmail(formData.email)) {
+      setErrorEmail("Debes ingresar un email valido del restaurante.")
+      isValid = false
+    }
+
+    if (size(formData.phone) < 10) {
+      setErrorPhone("Debes ingresar el teléfono del restaurante.")
+      isValid = false
+    }
+
+    if (isEmpty(formData.description)) {
+      setErrorDescription("Debes ingresar una descripción del restaurante.")
+      isValid = false
+    }
+
+    if (!locationRestaurant) {
+      toastRef.current.show("Debes de localizar el restaurante en el mapa.", 3000)
+      isValid = false;
+    } else if (size(imagesSelected === 0)) {
+      toastRef.current.show("Debes de agregar al menos 1 imágen al restaurante", 3000)
+      isValid = false;
+    }
+
+    return isValid
+  }
+
+  const clearErrors = () => {
+    setErrorAddress(null)
+    setErrorPhone(null)
+    setErrorDescription(null)
+    setErrorEmail(null)
+    setErrorName(null)
+    setErrorPhone(null)
   }
 
   return (
@@ -56,7 +108,6 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
       <MapRestaurant
         isVisibleMap={isVisibleMap}
         setIsVisibleMap={setIsVisibleMap}
-        locationRestaurant={locationRestaurant}
         setLocationRestaurant={setLocationRestaurant}
         toastRef={toastRef}
       />
@@ -64,7 +115,7 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
   );
 }
 
-function MapRestaurant({ isVisibleMap, setIsVisibleMap, locationRestaurant, setLocationRestaurant, toastRef }) {
+function MapRestaurant({ isVisibleMap, setIsVisibleMap, setLocationRestaurant, toastRef }) {
   const [newRegion, setNewRegion] = useState(null)
 
   useEffect(() => {
