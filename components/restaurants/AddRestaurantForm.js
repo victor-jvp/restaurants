@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Dimensions, StyleSheet, Text, View } from 'react-native'
-import { Avatar, Button, Icon, Image, Input } from 'react-native-elements';
+import { Avatar, Button, Icon, Image, Input } from 'react-native-elements'
 import CountryPicker from 'react-native-country-picker-modal'
-import { ScrollView, Alert } from "react-native";
+import { ScrollView, Alert } from "react-native"
 import { map, size, filter } from 'lodash'
-import MapView from "react-native-maps";
+import MapView from "react-native-maps"
 
 import { getCurrentLocation, loadImageFromGallery } from '../../utils/helpers';
 import Modal from '../../components/Modal'
@@ -71,7 +71,7 @@ function MapRestaurant({ isVisibleMap, setIsVisibleMap, locationRestaurant ,setL
       const response = await getCurrentLocation()
       if (response.status) {
         setLocationRestaurant(response.location)
-        console.log(locationRestaurant);
+        console.log(response.location);
       }
     })()
   }, [])
@@ -79,21 +79,23 @@ function MapRestaurant({ isVisibleMap, setIsVisibleMap, locationRestaurant ,setL
   return (
     <Modal isVisible={isVisibleMap} setIsVisible={setIsVisibleMap}>
       <View>
-        {locationRestaurant && (
+        {
+          locationRestaurant && (
           <MapView
             style={styles.mapStyle}
             initialRegion={locationRestaurant}
-            showsUserLocation={true}
+            showsUserLocation
           >
             <MapView.Marker
-              coordnate={{
-                laditute: location.laditute,
-                longitude: location.longitude,
+              coordinate={{
+                latitude: locationRestaurant.latitude,
+                longitude: locationRestaurant.longitude,
               }}
               draggable
             />
           </MapView>
-        )}
+          )
+        }
         <View style={styles.viewMapBtn}>
           <Button
             title="Guardar Ubicación"
