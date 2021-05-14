@@ -5,10 +5,11 @@ import CountryPicker from 'react-native-country-picker-modal'
 import { ScrollView, Alert } from "react-native"
 import { map, size, filter, isEmpty } from 'lodash'
 import MapView from "react-native-maps"
+import uuid from 'random-uuid-v4'
 
 import { getCurrentLocation, loadImageFromGallery, validateEmail } from '../../utils/helpers';
 import Modal from '../../components/Modal'
-
+import { uploadImage } from '../../utils/actions'
 
 const widthScreen = Dimensions.get("window").width
 
@@ -24,12 +25,30 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
   const [locationRestaurant, setLocationRestaurant] = useState(null)
   
 
-  const addRestaurant = () => {
+  const addRestaurant = async () => {
     if (!validForm()) {
       return
     }
 
+    setLoading(true)
+    const response = await uploadImages()
+    console.log(response);
+    setLoading(false)
+
     console.log('Fuck Yeah!')
+  }
+
+  const uploadImages = async () => {
+    const imagesUrl = []
+    await Promise.all(
+      map(imagesSelected, async (image) => {
+        const response = await uploadImage(image, "restaurants", uuid());
+        if (response.statusResponse) {
+          imagesUrl.push(response.url)
+        }
+      })
+    )
+    return imagesUrl
   }
 
   const validForm = () => {
