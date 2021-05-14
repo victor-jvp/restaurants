@@ -9,7 +9,7 @@ import uuid from 'random-uuid-v4'
 
 import { getCurrentLocation, loadImageFromGallery, validateEmail } from '../../utils/helpers';
 import Modal from '../../components/Modal'
-import { uploadImage } from '../../utils/actions'
+import { addDocumentWithoutId, getCurrentUser, uploadImage } from '../../utils/actions'
 
 const widthScreen = Dimensions.get("window").width
 
@@ -31,11 +31,31 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
     }
 
     setLoading(true)
-    const response = await uploadImages()
-    console.log(response);
+    const responseUploadImages = await uploadImages()
+    const restaurant = {
+      name: formData.name,
+      address: formData.address,
+      email: formData.email,
+      description: formData.description,
+      callingCode: formData.callingCode,
+      phone: formData.phone,
+      location: locationRestaurant,
+      images: responseUploadImages,
+      rating: 0,
+      ratingTotal: 0,
+      quantityVoting: 0,
+      createdAt: new Date(),
+      createdBy: getCurrentUser().uid,
+    }
+    const responseAddDocument = await addDocumentWithoutId("restaurants", restaurant)
     setLoading(false)
 
-    console.log('Fuck Yeah!')
+    if (!responseAddDocument.statusResponse) {
+      toastRef.current.show("Error al guardar el restaurante. Por favor intenta mas tarde.", 3000)
+      return
+    }
+
+    navigation.navigate("restaurants")
   }
 
   const uploadImages = async () => {
@@ -142,6 +162,7 @@ function MapRestaurant({ isVisibleMap, setIsVisibleMap, setLocationRestaurant, t
       const response = await getCurrentLocation()
       if (response.status) {
         setNewRegion(response.location);
+        console.log(response.location);
       }
     })()
   }, [])
