@@ -45,7 +45,7 @@ export const getCurrentLocation = async () => {
     latitude: position.coords.latitude,
     longitude: position.coords.longitude,
     latitudeDelta: 0.001,
-    longitudeDelte: 0.001
+    longitudeDelta: 0.001
   }
   response.status = true
   response.location = location
